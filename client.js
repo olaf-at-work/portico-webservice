@@ -4,24 +4,24 @@ import WebSocket from 'ws';
 
 // Your JSON data
 const jsonData = {
+    "settings": {
+        "provider": "native"
+    },
     "relaychain": {
         "chain": "rococo-local",
         "default_command": "./bin/polkadot",
         "nodes": [
             {
                 "name": "alice",
-                "validator": true
             },
             {
                 "name": "bob",
-                "validator": true
             }
         ]
     },
     "parachains": [
         {
             "id": 2100,
-            "addToGenesis": true,
             "cumulus_based": true,
             "chain": "local",
             "add_to_genesis": false,
@@ -59,7 +59,7 @@ function sendPostRequest() {
     })
         .then(response => response.json())
         .then(data => {
-            console.log('POST request success:', data);
+            console.log('POST request success:', JSON.stringify(data, null, 4));
             connectWebSocket();
         })
         .catch(error => console.error('Error in POST request:', error));

@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@fastify/websocket": "^8.2.0",
+    "@zombienet/orchestrator": "^0.0.68",
     "fastify": "^4.24.3",
     "fastify-websocket": "^4.3.0",
     "json2toml": "^6.0.0",
