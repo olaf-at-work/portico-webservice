@@ -1,0 +1,23 @@
+[relaychain]
+chain = "rococo-local"
+default_command = "./bin/polkadot"
+
+  [[relaychain.nodes]]
+  name = "alice"
+  validator = true
+
+  [[relaychain.nodes]]
+  name = "bob"
+  validator = true
+
+[[parachains]]
+id = 2100
+addToGenesis = true
+cumulus_based = true
+chain_spec_path = "./plain-parachain-chainspec.json"
+add_to_genesis = false
+register_in_genesis = false
+
+  [parachains.collator]
+  name = "parachain-collator01"
+  command = "./target/release/parachain-template-node"

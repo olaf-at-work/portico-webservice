@@ -1,0 +1,34 @@
+{
+    "relaychain": {
+        "chain": "rococo-local",
+        "default_command": "./bin/polkadot",
+        "nodes": [
+            {
+                "name": "alice",
+                "ws_port ": "9000",
+                "validator": true
+            },
+            {
+                "name": "bob",
+                "ws_port ": "9100",
+                "validator": true
+            }
+        ]
+    },
+    "parachains": [
+        {
+            "id": 2000,
+            "addToGenesis": true,
+            "cumulus_based": true,
+            "chain_spec_path": "./plain-parachain-chainspec.json",
+            "chain": "local",
+            "add_to_genesis": false,
+            "onboard_as_parachain": false,
+            "collator": {
+                "name": "parachain-collator01",
+                "ws_port ": "9200",
+                "command": "./bin/parachain-template-node"
+            }
+        }
+    ]
+}
