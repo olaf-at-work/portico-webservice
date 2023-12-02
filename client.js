@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import WebSocket from 'ws';
 
+
 // Your JSON data
 const jsonData = {
     "relaychain": {
@@ -43,38 +44,48 @@ const jsonData = {
     ]
 };
 
-// URL of your API endpoint
-const apiUrl = 'http://localhost:4000/';
+// URLs
+const apiUrl = 'http://localhost:4000/network';
+const wsUrl = 'ws://localhost:4000/';
 
-// Send the POST request
-fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(jsonData)
-})
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-
-        // Establish a WebSocket connection
-        const ws = new WebSocket('ws://localhost:4000/ws');
-
-        ws.onopen = function () {
-            console.log('WebSocket connection established');
-        };
-
-        ws.onmessage = function (event) {
-            console.log('Message from server:', event.data);
-        };
-
-        ws.onclose = function () {
-            console.log('WebSocket connection closed');
-        };
-
-        ws.onerror = function (error) {
-            console.error('WebSocket error:', error);
-        };
+// Function to send the POST request
+function sendPostRequest() {
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)
     })
-    .catch(error => console.error('Error:', error));
+        .then(response => response.json())
+        .then(data => {
+            console.log('POST request success:', data);
+            connectWebSocket();
+        })
+        .catch(error => console.error('Error in POST request:', error));
+}
+
+// Function to establish the WebSocket connection
+function connectWebSocket() {
+    const ws = new WebSocket(wsUrl);
+
+    ws.on('open', () => {
+        console.log('WebSocket connection established');
+    });
+
+    ws.on('message', event => {
+        const message = event.toString();
+        console.log('Message from server:', message);
+    });
+
+    ws.on('close', () => {
+        console.log('WebSocket connection closed');
+    });
+
+    ws.on('error', error => {
+        console.error('WebSocket error:', error);
+    });
+}
+
+// Make the POST request
+sendPostRequest();
