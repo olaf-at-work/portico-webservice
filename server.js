@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import { spawn } from 'child_process';
 import fs from 'fs/promises';
 import fastifyWebsocket from '@fastify/websocket';
+import { Network, start, Providers } from '@zombienet/orchestrator';
 
 const fastify = Fastify({ logger: true });
 fastify.register(fastifyWebsocket);
@@ -9,6 +10,7 @@ fastify.register(fastifyWebsocket);
 let outputBuffer = '';
 let connection = '';
 let connections = [];
+
 
 
 function parseZombienetOutput(output) {
@@ -65,32 +67,16 @@ fastify.post('/network', async (request, reply) => {
     const formattedJson = JSON.stringify(networkTopology, null, 4);
     await fs.writeFile('./zombienet-config/rococo-local-config_generated.json', formattedJson);
 
-    const command = './zombienet-macos';
-    const args = ['-p', 'native', 'spawn', '-d', `/tmp/${date}`, 'zombienet-config/rococo-local-config_generated.json'];
-    const process = spawn(command, args);
-
-    let commandOutput = '';
-
-    process.stdout.on('data', (data) => {
-        console.log('Command output:', data.toString())
-        const parsedOutput = parseZombienetOutput(data.toString());
-        console.log('Parsed output:', parsedOutput);
-        const parsedOutputString = JSON.stringify(parsedOutput);
-        if (parsedOutputString.length > 0) {
-            broadcastToClients(parsedOutputString);
-        }
-        broadcastToClients(parsedOutputString);
+    // needs some validation here
+    const network = await start("ZOMBIENET_CREDENTIALS", networkTopology, {
+        spawnConcurrency: 5,
     });
 
-    process.stderr.on('data', (data) => {
-        commandOutput += data.toString();
-    });
+    // network should be stored globally
+    console.log(network);
+    console.log("\n\n");
 
-    process.on('close', (code) => {
-        console.log(`Child process exited with code ${code}`);
-    });
-
-    reply.send({ result: 'OK' });
+    reply.send({ result: 'OK', network: sanitizeNetwork(network) });
 });
 
 // Broadcast the data to all connected clients
@@ -100,6 +86,32 @@ function broadcastToClients(data) {
             socket.send(data);
         }
     });
+}
+
+function sanitizeNetwork(network) {
+    const relay = network.relay.map(sanitizeNode)
+
+    const paras = Object.keys(network.paras).reduce((memo, paraId) => {
+        const nodes = network.paras[paraId].nodes.map(sanitizeNode);
+        memo[paraId] = nodes;
+        return memo;
+    }, {});
+
+    return {
+        ns: network.namespaces,
+        relay,
+        paras,
+    }
+}
+
+function sanitizeNode({name, wsUri, prometheusUri, multiAddress}) {
+    const parts = multiAddress.split("/");
+    return {
+        name,
+        wsUri,
+        prometheusUri,
+        p2pId: parts[parts.length -1]
+    }
 }
 
 function formatDate() {

@@ -1,25 +1,25 @@
 {
+    "settings": {
+        "provider": "native"
+    },
     "relaychain": {
         "chain": "rococo-local",
         "default_command": "./bin/polkadot",
         "nodes": [
             {
-                "name": "alice",
-                "validator": true
+                "name": "alice"
             },
             {
-                "name": "bob",
-                "validator": true
+                "name": "bob"
             }
         ]
     },
     "parachains": [
         {
             "id": 2100,
-            "addToGenesis": true,
             "cumulus_based": true,
             "chain": "local",
-            "add_to_genesis": false,
+            "add_to_genesis": true,
             "onboard_as_parachain": false,
             "collators": [
                 {
