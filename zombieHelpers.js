@@ -82,28 +82,3 @@ function sanitizeNode({name, wsUri, prometheusUri, multiAddress}) {
         p2pId: parts[parts.length -1]
     }
 }
-
-
-
-
-// {
-//     "id": 2100,
-//     "cumulus_based": true,
-//     "chain": "local",
-//     "add_to_genesis": false,
-//     "onboard_as_parachain": false,
-//     "collators": [
-//         {
-//             "name": "parachain-collator01",
-//             "command": "./bin/parachain-template-node"
-//         },
-//         {
-//             "name": "parachain-collator02",
-//             "command": "./bin/parachain-template-node"
-//         },
-//         {
-//             "name": "parachain-collator03",
-//             "command": "./bin/parachain-template-node"
-//         }
-//     ]
-// }
